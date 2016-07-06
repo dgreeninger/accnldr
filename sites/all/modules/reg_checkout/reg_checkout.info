@@ -1,3 +1,4 @@
-name = reg_checkout
-description = Test
+name = Registration Checkout
+project = "reg_checkout"
+description = "This module automatically adds items to your cart when you submit a registration."
 core = 7.x

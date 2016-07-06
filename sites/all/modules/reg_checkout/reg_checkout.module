@@ -1,8 +1,16 @@
 <?php
-function reg_checkout_node_insert($node) {
-  if ($node->type == 'registration') {
-echo "test";
+function reg_checkout_entity_insert($entity) {
+  if ($entity->type == 'laborday_retreat') {
+    global $user;
+    // Create new line item:
+    $quantity = 1;
+    $product = 2;
+    //this code is supposed to add an item to the cart, but it just throws an error
+    //$line_item = commerce_product_line_item_new($product);
+
+    // Add to current user's cart: if the user is not logged in ($user->uid: 0) Drupal Commerce manages the $_SESSION
+    //$line_item_added = commerce_cart_product_add($user->uid, $line_item);
+
+    // If $line_item_added !== FALSE the line_item has been added OK!
   }
-
-
 }
