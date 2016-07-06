@@ -1,0 +1,8 @@
+<?php
+function reg_checkout_node_insert($node) {
+  if ($node->type == 'registration') {
+echo "test";
+  }
+
+
+}
