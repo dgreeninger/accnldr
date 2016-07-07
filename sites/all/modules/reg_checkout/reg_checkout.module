@@ -3,17 +3,21 @@ function reg_checkout_entity_insert($entity) {
   if ($entity->type == 'laborday_retreat') {
     //display all the values in the entity in a dpm, you can expand the dpm to see all the field values and use them like this
     dpm($entity);
-    if ($entity['field_full_time_or_part_time'][LANGUAGE_NONE]['0']['value'] == 0) {
+    if ($entity->field_full_or_part_time[LANGUAGE_NONE]['0']['value'] == 0) {
       //it's a part time registration
+      dpm('Part Time');
+      //need to setup a part time product code
+      //$product_id = 2;
     }
     else {
       //it's a full time registration
+      dpm('Full Time');
+      //need to set the correct product_id based on the $entity field data
+      $product_id = 2;
     }
     global $user;
     // Create new line item:
     $quantity = 1;
-    //need to set the correct product_id based on the $entity field data
-    $product_id = 2;
     //load up the product id
     $product = commerce_product_load($product_id);
     //create a line item with the product and the quantity

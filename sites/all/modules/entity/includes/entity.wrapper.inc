@@ -119,7 +119,7 @@ abstract class EntityMetadataWrapper {
    */
   public function set($value) {
     if (!$this->validate($value)) {
-      throw new EntityMetadataWrapperException('Invalid data value given. Be sure it matches the required data type and format.');
+      throw new EntityMetadataWrapperException('Invalid data value given for key ' . $this->info['name'] . '. Be sure it matches the required data type and format.');
     }
     $this->clear();
     $this->data = $value;
@@ -734,7 +734,7 @@ class EntityDrupalWrapper extends EntityStructureWrapper {
    */
   public function set($value) {
     if (!$this->validate($value)) {
-      throw new EntityMetadataWrapperException('Invalid data value given. Be sure it matches the required data type and format.');
+      throw new EntityMetadataWrapperException('Invalid data value given for key ' . $this->info['name'] . '. Be sure it matches the required data type and format.');
     }
     if ($this->info['type'] == 'entity' && $value === $this) {
       // Nothing to do.
