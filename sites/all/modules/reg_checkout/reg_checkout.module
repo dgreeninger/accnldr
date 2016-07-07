@@ -1,16 +1,24 @@
 <?php
 function reg_checkout_entity_insert($entity) {
   if ($entity->type == 'laborday_retreat') {
+    //display all the values in the entity in a dpm, you can expand the dpm to see all the field values and use them like this
+    dpm($entity);
+    if ($entity['field_full_time_or_part_time'][LANGUAGE_NONE]['0']['value'] == 0) {
+      //it's a part time registration
+    }
+    else {
+      //it's a full time registration
+    }
     global $user;
     // Create new line item:
     $quantity = 1;
-    $product = 2;
-    //this code is supposed to add an item to the cart, but it just throws an error
-    //$line_item = commerce_product_line_item_new($product);
-
+    //need to set the correct product_id based on the $entity field data
+    $product_id = 2;
+    //load up the product id
+    $product = commerce_product_load($product_id);
+    //create a line item with the product and the quantity
+    $line_item = commerce_product_line_item_new($product, $quantity, 0);
     // Add to current user's cart: if the user is not logged in ($user->uid: 0) Drupal Commerce manages the $_SESSION
-    //$line_item_added = commerce_cart_product_add($user->uid, $line_item);
-
-    // If $line_item_added !== FALSE the line_item has been added OK!
+    commerce_cart_product_add($user->uid, $line_item);
   }
 }
