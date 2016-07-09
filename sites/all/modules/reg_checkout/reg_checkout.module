@@ -1,28 +1,107 @@
 <?php
 function reg_checkout_entity_insert($entity) {
+  global $user;
   if ($entity->type == 'laborday_retreat') {
     //display all the values in the entity in a dpm, you can expand the dpm to see all the field values and use them like this
-    dpm($entity);
+    //dpm($entity);
     if ($entity->field_full_or_part_time[LANGUAGE_NONE]['0']['value'] == 0) {
       //it's a part time registration
-      dpm('Part Time');
-      //need to setup a part time product code
-      //$product_id = 2;
+      //loop through which days
+      foreach ($entity->field_which_days[LANGUAGE_NONE] as $key => $value) {
+        //see if they have the night checked
+       // dpm($value);
+        $value = strtolower($value['value']);
+        $field_name = "field_$value"."_night";
+        $field_name = (string)$field_name;
+        if ($entity->{"$field_name"}[LANGUAGE_NONE]['0']['value'] != 1){
+          $night_counter++;
+        }
+      }
+      if ($night_counter == 1){
+        //add one night product to cart
+        $product_id = get_part_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
+        add_product_to_cart($product_id, 1);
+      }
+      else if ($night_counter == 2) {
+        //add two night product to cart
+        $product_id = get_part_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 2);
+        add_product_to_cart($product_id, 1);
+      }
+      //foreach meal checkbox that is checked, incrament a meal counter
+      foreach ($entity->field_saturday_meals[LANGUAGE_NONE] as $key => $value) {
+        //see if they have any meals checked
+        $meal_counter++;
+      }
+      foreach ($entity->field_sunday_meals[LANGUAGE_NONE] as $key => $value) {
+        //see if they have any meals checked
+        $meal_counter++;
+      }
+      foreach ($entity->field_monday_breakfast[LANGUAGE_NONE] as $key => $value) {
+        //see if they have any meals checked
+        $meal_counter++;
+      }
+      if ($meal_counter > 0) {
+        add_product_to_cart(10, $meal_counter);
+      }
     }
     else {
       //it's a full time registration
-      dpm('Full Time');
-      //need to set the correct product_id based on the $entity field data
-      $product_id = 2;
+      $product_id = get_full_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value']);
+      add_product_to_cart($product_id, 1);
     }
-    global $user;
-    // Create new line item:
-    $quantity = 1;
-    //load up the product id
-    $product = commerce_product_load($product_id);
-    //create a line item with the product and the quantity
-    $line_item = commerce_product_line_item_new($product, $quantity, 0);
-    // Add to current user's cart: if the user is not logged in ($user->uid: 0) Drupal Commerce manages the $_SESSION
-    commerce_cart_product_add($user->uid, $line_item);
   }
+}
+
+function add_product_to_cart($product_id, $quantity) {
+  global $user;
+  //load up the product id
+  $product = commerce_product_load($product_id);
+  //create a line item with the product and the quantity
+  $line_item = commerce_product_line_item_new($product, $quantity, 0);
+  // Add to current user's cart: if the user is not logged in ($user->uid: 0) Drupal Commerce manages the $_SESSION
+  commerce_cart_product_add($user->uid, $line_item);
+}
+function get_full_time_product_id($age) {
+  if ($age <= 3) {
+    $product_id = 6;
+  }
+  if ($age <= 6 && $age > 3) {
+    $product_id = 5;
+  }
+  if ($age <= 9 && $age > 6) {
+    $product_id = 4;
+  }
+  if ($age <= 12 && $age > 9) {
+    $product_id = 3;
+  }
+  if ($age <= 15 && $age > 12) {
+    $product_id = 2;
+  }
+  if ($age > 15) {
+    $product_id = 1;
+  }
+  return $product_id;
+}
+
+function get_part_time_product_id($age, $day_count) {
+  if ($age <= 3 && $day_count == 1) {
+    $product_id = 11;
+  }
+  if ($age <= 9 && $age > 3 && $day_count == 1) {
+    $product_id = 12;
+  }
+  if ($age > 9 && $day_count == 1) {
+    $product_id = 13;
+  }
+  if ($age <= 3 && $day_count == 2) {
+    $product_id = 14;
+  }
+  if ($age <= 9 && $age > 3 && $day_count == 2) {
+    $product_id = 15;
+  }
+  if ($age > 9 && $day_count == 2) {
+    $product_id = 16;
+  }
+ 
+ return $product_id;
 }
