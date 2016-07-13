@@ -104,4 +104,14 @@ function get_part_time_product_id($age, $day_count) {
   }
  
  return $product_id;
+
 }
+
+
+function reg_checkout_form_alter(&$form, &$form_state, $form_id){
+  // target a single form
+  if($form_id == "registration_form"){
+    dsm($form);
+  }
+}
+
