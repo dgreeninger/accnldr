@@ -138,7 +138,29 @@ function get_part_time_product_id($age, $day_count) {
 }
 
 
+function reg_checkout_form_validate(&$form, &$form_state){
+  //dsm($form);
+  //foreach days checked, see if they're coming that night
+  foreach($form['field_which_days'][LANGUAGE_NONE]['#value'] as $value){
+    $field_name = "field_".strtolower($value)."_night";
+    if( $form[$field_name]['und']['#value'] === NULL && $value != 'Monday' ) {
+      form_set_error('form', "You need to tell us if you're coming for $value night.");
+    }
+    if ($value == 'Monday' && $form['field_monday_breakfast']['und']['#value'] === NULL ) {
+        form_set_error('form', "You need to tell us if you need $value breakfast");
+    }
+
+    if( $value != 'Monday' ) {
+      //foreach night not checked, make sure they're selecting something for the meals
+      $meal_field_name = "field_".strtolower($value)."_meals";
+      if( empty($form[$meal_field_name]['und']['#value'])) {
+        form_set_error('form', "You need to tell us which meals you plan on purchasing for $value");
+      }
+    }
+  }
+}
 function reg_checkout_form_alter(&$form, &$form_state, $form_id){
+
   //this would hide the update cart button and disable the quantity field
   if ($form_id === 'views_form_commerce_cart_form_default') {
     //$form['actions']['submit']['#access'] = FALSE;
@@ -150,7 +172,16 @@ function reg_checkout_form_alter(&$form, &$form_state, $form_id){
   }
   // target a single form
   if($form_id == "registration_form"){
-    //dsm($form);
+    //do custom validation
+    $form['#validate'][] = 'reg_checkout_form_validate';
   }
 }
+function reg_checkout_element_info_alter(&$type) {
+  $type['radios']['#process'][] = '_reg_checkout_remove_radio_na';
+}
 
+function _reg_checkout_remove_radio_na($element) {
+  unset($element['#options']['_none']);
+  unset($element['_none']);
+  return $element;
+}
