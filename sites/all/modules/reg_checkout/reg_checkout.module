@@ -7,14 +7,40 @@ function reg_checkout_entity_insert($entity) {
     if ($entity->field_full_or_part_time[LANGUAGE_NONE]['0']['value'] == 0) {
       //it's a part time registration
       //loop through which days
+      $night_counter = '';
+      $breakfast_meal_counter = '';
+      $lunch_meal_counter = '';
+      $dinner_meal_counter = '';
+
       foreach ($entity->field_which_days[LANGUAGE_NONE] as $key => $value) {
         //see if they have the night checked
-       // dpm($value);
+        //dpm($value);
         $value = strtolower($value['value']);
-        $field_name = "field_$value"."_night";
-        $field_name = (string)$field_name;
-        if ($entity->{"$field_name"}[LANGUAGE_NONE]['0']['value'] != 1){
-          $night_counter++;
+        //there is no monday night, so if the value is not monday, check if the night is checked and increment the counter
+        if ($value != 'monday'){
+          $field_name = "field_$value"."_night";
+          $meal_field_name = "field_$value"."_meals";
+          if ($entity->{"$field_name"}[LANGUAGE_NONE]['0']['value'] != 1){
+            $night_counter++;
+
+          }
+          else {
+            foreach ($entity->{"$meal_field_name"}[LANGUAGE_NONE] as $key => $value) {
+              //see if they have any meals checked
+              switch ($value['value']) {
+                case 'Breakfast':
+                  $breakfast_meal_counter++;
+                  break;
+                case 'Lunch':
+                  $lunch_meal_counter++;
+                  break;
+                case 'Dinner':
+                  $dinner_meal_counter++;
+                  break;
+              }
+            }
+          }
+
         }
       }
       if ($night_counter == 1){
@@ -27,21 +53,22 @@ function reg_checkout_entity_insert($entity) {
         $product_id = get_part_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 2);
         add_product_to_cart($product_id, 1);
       }
-      //foreach meal checkbox that is checked, incrament a meal counter
-      foreach ($entity->field_saturday_meals[LANGUAGE_NONE] as $key => $value) {
-        //see if they have any meals checked
-        $meal_counter++;
-      }
-      foreach ($entity->field_sunday_meals[LANGUAGE_NONE] as $key => $value) {
-        //see if they have any meals checked
-        $meal_counter++;
-      }
       foreach ($entity->field_monday_breakfast[LANGUAGE_NONE] as $key => $value) {
         //see if they have any meals checked
-        $meal_counter++;
+        //dpm($value);
+        //if the monday meal is checked, increment the counter
+        if ($value['value'] == 0) {
+          $breakfast_meal_counter++;
+        }
       }
-      if ($meal_counter > 0) {
-        add_product_to_cart(10, $meal_counter);
+      if ($breakfast_meal_counter > 0) {
+        add_product_to_cart(17, $breakfast_meal_counter);
+      }
+      if ($lunch_meal_counter > 0) {
+        add_product_to_cart(18, $lunch_meal_counter);
+      }
+      if ($dinner_meal_counter > 0) {
+        add_product_to_cart(10, $dinner_meal_counter);
       }
     }
     else {
@@ -49,6 +76,9 @@ function reg_checkout_entity_insert($entity) {
       $product_id = get_full_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value']);
       add_product_to_cart($product_id, 1);
     }
+
+    drupal_set_message("Registration for <b>".$entity->field_first_name[LANGUAGE_NONE]['0']['value']."</b> has been successfully submitted.");
+    drupal_set_message("Fill out the form again, to register another person, or head to the <a href='/cart'>cart</a> to get payment instructions.<br>You will not be considered as registered and your room will not be assigned until payment is received.");
   }
 }
 
@@ -102,8 +132,8 @@ function get_part_time_product_id($age, $day_count) {
   if ($age > 9 && $day_count == 2) {
     $product_id = 16;
   }
- 
- return $product_id;
+
+  return $product_id;
 
 }
 
