@@ -142,19 +142,23 @@ function reg_checkout_form_validate(&$form, &$form_state){
   //dsm($form);
   //foreach days checked, see if they're coming that night
   foreach($form['field_which_days'][LANGUAGE_NONE]['#value'] as $value){
-    $field_name = "field_".strtolower($value)."_night";
-    if( $form[$field_name]['und']['#value'] === NULL && $value != 'Monday' ) {
-      form_set_error('form', "You need to tell us if you're coming for $value night.");
-    }
+    //check if monday is selected and if they don't have a breakfast choice
     if ($value == 'Monday' && $form['field_monday_breakfast']['und']['#value'] === NULL ) {
-        form_set_error('form', "You need to tell us if you need $value breakfast");
+      form_set_error('form', "You need to tell us if you need $value breakfast");
     }
-
-    if( $value != 'Monday' ) {
-      //foreach night not checked, make sure they're selecting something for the meals
-      $meal_field_name = "field_".strtolower($value)."_meals";
-      if( empty($form[$meal_field_name]['und']['#value'])) {
-        form_set_error('form', "You need to tell us which meals you plan on purchasing for $value");
+    //if it's not monday, check and see if they told us if they're coming for that night
+    if ($value != 'Monday') {
+      $field_name = "field_".strtolower($value)."_night";
+      //if they didn't tell us, throw an error
+      if( $form[$field_name]['und']['#value'] === NULL && $value != 'Monday' ) {
+        form_set_error('form', "You need to tell us if you're coming for $value night.");
+      }
+      //if they told us that they're coming for the day only, make sure they picked some meal
+      if( $form[$field_name]['und']['#value'] == 1) {
+        $meal_field_name = "field_".strtolower($value)."_meals";
+        if( empty($form[$meal_field_name]['und']['#value'])) {
+          form_set_error('form', "You need to tell us which meals you plan on purchasing for $value");
+        }
       }
     }
   }
