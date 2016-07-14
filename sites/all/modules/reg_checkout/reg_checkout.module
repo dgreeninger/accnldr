@@ -139,9 +139,18 @@ function get_part_time_product_id($age, $day_count) {
 
 
 function reg_checkout_form_alter(&$form, &$form_state, $form_id){
+  //this would hide the update cart button and disable the quantity field
+  if ($form_id === 'views_form_commerce_cart_form_default') {
+    //$form['actions']['submit']['#access'] = FALSE;
+    foreach($form['edit_quantity'] as &$quantity) {
+      if (is_array($quantity)) {
+        //$quantity['#disabled'] = TRUE;
+      }
+    }
+  }
   // target a single form
   if($form_id == "registration_form"){
-    dsm($form);
+    //dsm($form);
   }
 }
 
