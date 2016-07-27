@@ -106,7 +106,6 @@ function reg_checkout_entity_insert($entity) {
       $product_id = get_full_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value']);
       add_product_to_cart($product_id, 1);
     }
-
     drupal_set_message("Registration for <b>".$entity->field_first_name[LANGUAGE_NONE]['0']['value']."</b> has been successfully submitted.");
     drupal_set_message("Fill out the form again, to register another person, or head to the <a href='/cart'>cart</a> to get payment instructions.<br>You will not be considered as registered and your room will not be assigned until payment is received.");
   }
