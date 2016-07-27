@@ -62,43 +62,13 @@ function reg_checkout_entity_insert($entity) {
         }
       }
       if ($breakfast_meal_counter > 0) {
-        if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 9) {
-          $breakfast_id = 17;
-          add_product_to_cart($breakfast_id, $breakfast_meal_counter);
-        }
-        else if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 3) {
-          $breakfast_id = 19;
-          add_product_to_cart($breakfast_id, $breakfast_meal_counter);
-        }
-        else (
-          drupal_set_message("Breakfast for children under 3 is free.");
-        )
+        add_product_to_cart(17, $breakfast_meal_counter);
       }
       if ($lunch_meal_counter > 0) {
-        if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 9) {
-          $lunch_id = 18;
-          add_product_to_cart($lunch_id, $lunch_meal_counter);
-        }
-        else if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 3) {
-          $lunch_id = 20;
-          add_product_to_cart($lunch_id, $lunch_meal_counter);
-        }
-        else (
-          drupal_set_message("Lunch for children under 3 is free.");
-        )
+        add_product_to_cart(18, $lunch_meal_counter);
       }
       if ($dinner_meal_counter > 0) {
-        if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 9) {
-          $dinner_id = 10;
-          add_product_to_cart($dinner_id, $dinner_meal_counter);
-        }
-        else if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 3) {
-          $dinner_id = 21;
-          add_product_to_cart($dinner_id, $dinner_meal_counter);
-        }
-        else (
-          drupal_set_message("Lunch for children under 3 is free.");
-        )
+        add_product_to_cart(10, $dinner_meal_counter);
       }
     }
     else {
