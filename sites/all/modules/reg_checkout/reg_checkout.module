@@ -11,6 +11,7 @@ function reg_checkout_entity_insert($entity) {
       $breakfast_meal_counter = '';
       $lunch_meal_counter = '';
       $dinner_meal_counter = '';
+      $no_meal_counter = '';
 
       foreach ($entity->field_which_days[LANGUAGE_NONE] as $key => $value) {
         //see if they have the night checked
@@ -22,9 +23,10 @@ function reg_checkout_entity_insert($entity) {
           $meal_field_name = "field_$value"."_meals";
           if ($entity->{"$field_name"}[LANGUAGE_NONE]['0']['value'] != 1){
             $night_counter++;
-
           }
           else {
+            //they're not coming for the night, so add the day use fee
+            day_use_fee_to_cart($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
             foreach ($entity->{"$meal_field_name"}[LANGUAGE_NONE] as $key => $value) {
               //see if they have any meals checked
               switch ($value['value']) {
@@ -37,10 +39,12 @@ function reg_checkout_entity_insert($entity) {
                 case 'Dinner':
                   $dinner_meal_counter++;
                   break;
+                case 'No Meals':
+                  $no_meal_counter++;
+                  break;
               }
             }
           }
-
         }
       }
       if ($night_counter == 1){
@@ -59,6 +63,9 @@ function reg_checkout_entity_insert($entity) {
         //if the monday meal is checked, increment the counter
         if ($value['value'] == 0) {
           $breakfast_meal_counter++;
+          day_use_fee_to_cart($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
+        } else {
+          day_use_fee_to_cart($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
         }
       }
       if ($breakfast_meal_counter > 0) {
@@ -110,7 +117,16 @@ function reg_checkout_entity_insert($entity) {
     drupal_set_message("Fill out the form again, to register another person, or head to the <a href='/cart'>cart</a> to get payment instructions.<br>You will not be considered as registered and your room will not be assigned until payment is received.");
   }
 }
-
+function day_use_fee_to_cart($age, $no_meal_counter){
+  if($age > 3) {
+    $no_meal_id = 22;
+    add_product_to_cart($no_meal_id, $no_meal_counter);
+  }
+  else {
+    $no_meal_id = 23;
+    add_product_to_cart($no_meal_id, $no_meal_counter);
+  }
+}
 function add_product_to_cart($product_id, $quantity) {
   global $user;
   //load up the product id
