@@ -3,7 +3,7 @@
 
 body {
   line-height: 1.5;
-  font-size: 87.5%;
+  font-size: 100%;
   word-wrap: break-word;
   margin: 0;
   padding: 0;
@@ -320,7 +320,7 @@ h1#site-name {
 }
 /* Region header blocks. */
 .region-header .block {
-  font-size: 0.857em;
+  font-size: 0.99em;
   float: left; /* LTR */
   margin: 0 10px;
   padding: 0;
