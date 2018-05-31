@@ -138,7 +138,7 @@ function theme_dir_listing_list_view($node) {
             $visible_columns[$column_name] = TRUE;
             $unsorted_rows[$file_name][FILEBROWSER_DATA_NAME_ICON] = array(
                 'data' => _filebrowser_thumbnails_generate($node, $data),
-                'style' => 'width:1%;'
+                'style' => 'width:1%; min-width:18px;'
             );
             break;
 
@@ -160,13 +160,15 @@ function theme_dir_listing_list_view($node) {
             break;
 
           case FILEBROWSER_DATA_NAME_CREATED :
-            if ($data['created'] != 0) {
+            isset($data['created']) ? null : $data['created'] = 0;
+            if ($data['created']) {
               $visible_columns[$column_name] = TRUE;
             }
             $unsorted_rows[$file_name][FILEBROWSER_DATA_NAME_CREATED] = format_date($data['created'], "small");
             break;
 
           case FILEBROWSER_DATA_NAME_MODIFIED :
+            isset($data['modified']) ? null : $data['modified'] = 0;
             if ($data['modified'] != 0) {
               $visible_columns[$column_name] = TRUE;
             }
@@ -246,6 +248,7 @@ function theme_dir_listing_list_view($node) {
     if (isset($table_sort['sql'])) {
       $field = $table_sort['sql'];
       $columns = _filebrowser_externals('metadata_info');
+
       if (isset($columns[$table_sort['sql']]) && isset($columns[$table_sort['sql']]['sortable']) && $columns[$table_sort['sql']]['sortable']) {
         switch ($columns[$table_sort['sql']]['type']) {
           case 'integer' :

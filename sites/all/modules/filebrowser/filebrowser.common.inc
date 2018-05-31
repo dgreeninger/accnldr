@@ -199,7 +199,15 @@ function _filebrowser_url_query($options = array()) {
  * @return re-encoded string
  */
 function _filebrowser_encoding_from_fs(&$node, $source) {
-  return strcasecmp($node->folder_presentation->encoding, 'UTF-8') == 0 ? $source : mb_convert_encoding($source, "UTF-8", $node->folder_presentation->encoding);
+  // For Drupal 6 filebrowser nodes can have an empty value for encoding
+  // So let's cater for that.
+  // issue #2660282
+  if (!is_string($node->folder_presentation->encoding) || strcasecmp($node->folder_presentation->encoding, 'UTF-8')) {
+    return $source;
+  }
+  else {
+    return mb_convert_encoding($source, "UTF-8", $node->folder_presentation->encoding);
+  }
 }
 
 /**
@@ -229,8 +237,8 @@ function _filebrowser_node_content_delete($node) {
 /**
  * Load a specific node content.
  *
- * @param $fid content fid
- * @return content record
+ * @param $fid integer content fid
+ * @return array content record
  */
 function _filebrowser_node_content_load($fid) {
   static $contents = array();
@@ -270,12 +278,11 @@ function _filebrowser_load_files(&$node, $fid = NULL, $rebuild = FALSE) {
   if (!$fid && (arg(0) == 'node' && is_numeric(arg(2)))) {
     $fid = arg(2);
   }
-  //debug:  echo 'fid = : ' . $fid . '<br>';exit();
 
   // Select current file record according to fid - you are requesting a specific file or subdir: node/23/47
   if ($fid) {
     $content = _filebrowser_node_content_load($fid);
-    if (!$content) {
+    if (empty($content['path'])) {
       drupal_goto("node/{$node->nid}");
     }
     $relative_path = $content['path'];
@@ -306,7 +313,6 @@ function _filebrowser_load_files(&$node, $fid = NULL, $rebuild = FALSE) {
       }
     }
   }
-
   // If this folder has already been processed, take it result
   static $cache = array();
   $cid = "{$node->nid}::{$relative_path}";
@@ -383,6 +389,7 @@ function _filebrowser_load_files(&$node, $fid = NULL, $rebuild = FALSE) {
 
         // This file is not filtered
         if (is_file($fs_file_full_path) && !_filebrowser_can_view_file($node, $fs_filename)) {
+
           continue;
         }
 
@@ -715,7 +722,7 @@ function _filebrowser_thumbnails_generate(& $node, & $file) {
       break;
     }
   }
-  return theme('image', array('path' => $icon, 'alt' => 'alt text'));
+  return theme('image', array('path' => $icon, 'alt' => 'alt text',));
 }
 
 /**

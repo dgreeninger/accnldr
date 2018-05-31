@@ -72,6 +72,7 @@ function filebrowser_permission() {
 
 /**
  * Implements hook_form().
+ * @Inheritdoc
  */
 function filebrowser_form(&$node, &$form_state) {
   $type = node_type_get_type($node);
@@ -150,12 +151,12 @@ function filebrowser_form(&$node, &$form_state) {
     '#description' => t("If you select this options clicking a file-link will download the file. Leave this option off if you want the file to open in your browser."),
     '#default_value' => isset($node->folder_rights->force_download) ? $node->folder_rights->force_download :'',
   );
-  $forbidden_files_default = "descript.ion\nfile.bbs\n.git\nCSV\n.svn";
+  $forbidden_files_default = "descript.ion\nfile.bbs\n*.git\nCSV\n*.svn";
 
   $form['folder_rights']['forbidden_files'] = array(
     '#type' => 'textarea',
     '#title' => t('Blacklist'),
-    '#description' => t('List of patterns of forbidden files, you can use wildcards (ex. .*).'),
+    '#description' => t('List of forbidden files. Use wildcards (*) if you want to exclude specific file extension. Example: *.git will exclude all files with .git extension.'),
     '#default_value' => isset($node->folder_rights->forbidden_files) ? $node->folder_rights->forbidden_files : $forbidden_files_default,
   );
   $form['folder_rights']['filtered_files'] = array(
@@ -190,7 +191,7 @@ function filebrowser_form(&$node, &$form_state) {
     '#type' => 'textarea',
     '#title' => t('Accepted files for uploading'),
     '#description' => t('List of file patterns accepted for upload. Empty means anything.'),
-    '#default_value' => isset($node->folder_uploads->accept_uploaded_files) ? $node->folder_uploads->accept_uploaded_files : '',
+    '#default_value' => isset($node->folder_uploads->accepted_uploaded_files) ? $node->folder_uploads->accepted_uploaded_files : '',
   );
 
   /** Folder presentation
@@ -381,7 +382,9 @@ function filebrowser_insert($node) {
 function filebrowser_update($node) {
   _filebrowser_prepare_record($node, FALSE);
   drupal_write_record("node_dir_listing", $node, 'nid');
-  _filebrowser_node_content_delete($node);
+  // Issue #2760957: listing edit resets fids
+  // No need to reset the fids on node edit.
+  // _filebrowser_node_content_delete($node);
 }
 
 /**
@@ -489,7 +492,7 @@ function filebrowser_view($node, $view_mode) {
             '#weight' => 2
         );
       }
-      if ($node->folder_uploads->enabled && user_access(FILEBROWSER_CREATE_FOLDER)) {
+      if ($node->folder_rights->create_folders && user_access(FILEBROWSER_CREATE_FOLDER)) {
         $form = drupal_get_form('filebrowser_form_create_folder', $node);
         $node->content['filebrowser_form_create_folder'] = array(
             '#markup' => drupal_render($form),
@@ -648,7 +651,6 @@ function filebrowser_form_upload_submit($form, &$form_state) {
   $i = 1; // Later we can have multi-upload
   $node = $form_state['values']['node'];
   $target = _filebrowser_build_new_upload_file_name($node, $form_state, $i);
-  //debug ($target, 'just prior to copy()');
   $success = copy($_FILES['files']['tmp_name']["file_$i"], $target);
   if (!$success) {
     drupal_set_message(t("Unable to upload this file, do you have filesystem right to do that ?"), 'error');

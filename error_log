@@ -1,0 +1,26 @@
+[30-May-2018 22:56:34 America/Denver] Drupal\Core\Database\DatabaseExceptionWrapper: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'tags' in 'field list': INSERT INTO {cache_bootstrap} (cid, expire, created, tags, checksum, data, serialized) VALUES (:db_insert_placeholder_0, :db_insert_placeholder_1, :db_insert_placeholder_2, :db_insert_placeholder_3, :db_insert_placeholder_4, :db_insert_placeholder_5, :db_insert_placeholder_6) ON DUPLICATE KEY UPDATE cid = VALUES(cid), expire = VALUES(expire), created = VALUES(created), tags = VALUES(tags), checksum = VALUES(checksum), data = VALUES(data), serialized = VALUES(serialized); Array
+(
+    [:db_insert_placeholder_0] => state
+    [:db_insert_placeholder_1] => -1
+    [:db_insert_placeholder_2] => 1527742594.626
+    [:db_insert_placeholder_3] => 
+    [:db_insert_placeholder_4] => 0
+    [:db_insert_placeholder_5] => a:1:{s:23:"system.maintenance_mode";N;}
+    [:db_insert_placeholder_6] => 1
+)
+ in /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Core/Cache/CacheCollector.php on line 266 #0 /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Core/Database/Connection.php(650): Drupal\Core\Database\Connection->handleQueryException(Object(PDOException), 'INSERT INTO {ca...', Array, Array)
+#1 /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Core/Database/Driver/mysql/Connection.php(87): Drupal\Core\Database\Connection->query('INSERT INTO {ca...', Array, Array)
+#2 /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Core/Database/Query/Upsert.php(106): Drupal\Core\Database\Driver\mysql\Connection->query('INSERT INTO {ca...', Array, Array)
+#3 /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Core/Cache/DatabaseBackend.php(263): Drupal\Core\Database\Query\Upsert->execute()
+#4 /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Core/Cache/DatabaseBackend.php(193): Drupal\Core\Cache\DatabaseBackend->doSetMultiple(Array)
+#5 /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Core/Cache/DatabaseBackend.php(183): Drupal\Core\Cache\DatabaseBackend->setMultiple(Array)
+#6 /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Core/Cache/CacheCollector.php(266): Drupal\Core\Cache\DatabaseBackend->set('state', Array, -1, Array)
+#7 /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Core/Cache/CacheCollector.php(327): Drupal\Core\Cache\CacheCollector->updateCache()
+#8 /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Core/EventSubscriber/KernelDestructionSubscriber.php(51): Drupal\Core\Cache\CacheCollector->destruct()
+#9 [internal function]: Drupal\Core\EventSubscriber\KernelDestructionSubscriber->onKernelTerminate(Object(Symfony\Component\HttpKernel\Event\PostResponseEvent), 'kernel.terminat...', Object(Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher))
+#10 /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Component/EventDispatcher/ContainerAwareEventDispatcher.php(111): call_user_func(Array, Object(Symfony\Component\HttpKernel\Event\PostResponseEvent), 'kernel.terminat...', Object(Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher))
+#11 /home2/greenin3/public_html/accnlabordayretreat.org/vendor/symfony/http-kernel/HttpKernel.php(88): Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher->dispatch('kernel.terminat...', Object(Symfony\Component\HttpKernel\Event\PostResponseEvent))
+#12 /home2/greenin3/public_html/accnlabordayretreat.org/vendor/stack/builder/src/Stack/StackedHttpKernel.php(32): Symfony\Component\HttpKernel\HttpKernel->terminate(Object(Symfony\Component\HttpFoundation\Request), Object(Symfony\Component\HttpFoundation\Response))
+#13 /home2/greenin3/public_html/accnlabordayretreat.org/core/lib/Drupal/Core/DrupalKernel.php(642): Stack\StackedHttpKernel->terminate(Object(Symfony\Component\HttpFoundation\Request), Object(Symfony\Component\HttpFoundation\Response))
+#14 /home2/greenin3/public_html/accnlabordayretreat.org/index.php(22): Drupal\Core\DrupalKernel->terminate(Object(Symfony\Component\HttpFoundation\Request), Object(Symfony\Component\HttpFoundation\Response))
+#15 {main}
