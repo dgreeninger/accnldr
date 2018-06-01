@@ -26,21 +26,15 @@ function reg_checkout_entity_insert($entity) {
           }
           else {
             //they're not coming for the night, so add the day use fee
-            day_use_fee_to_cart($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
             foreach ($entity->{"$meal_field_name"}[LANGUAGE_NONE] as $key => $value) {
               //see if they have any meals checked
               switch ($value['value']) {
-                case 'Breakfast':
-                  $breakfast_meal_counter++;
-                  break;
-                case 'Lunch':
-                  $lunch_meal_counter++;
-                  break;
-                case 'Dinner':
-                  $dinner_meal_counter++;
+                case 'Meals':
+                  $meal_counter++;
+                  meals_day_use_fee_to_cart($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
                   break;
                 case 'No Meals':
-                  $no_meal_counter++;
+                  day_use_fee_to_cart($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
                   break;
               }
             }
@@ -57,57 +51,7 @@ function reg_checkout_entity_insert($entity) {
         $product_id = get_part_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 2);
         add_product_to_cart($product_id, 1);
       }
-      foreach ($entity->field_monday_breakfast[LANGUAGE_NONE] as $key => $value) {
-        //see if they have any meals checked
-        //dpm($value);
-        //if the monday meal is checked, increment the counter
-        if ($value['value'] == 0) {
-          $breakfast_meal_counter++;
-          day_use_fee_to_cart($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
-        } else {
-          day_use_fee_to_cart($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
-        }
-      }
-      if ($breakfast_meal_counter > 0) {
-        if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 9) {
-          $breakfast_id = 17;
-          add_product_to_cart($breakfast_id, $breakfast_meal_counter);
-        }
-        else if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 3) {
-          $breakfast_id = 19;
-          add_product_to_cart($breakfast_id, $breakfast_meal_counter);
-        }
-        else {
-          drupal_set_message("Breakfast for children under 3 is free.");
-        }
-      }
-      if ($lunch_meal_counter > 0) {
-        if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 9) {
-          $lunch_id = 18;
-          add_product_to_cart($lunch_id, $lunch_meal_counter);
-        }
-        else if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 3) {
-          $lunch_id = 20;
-          add_product_to_cart($lunch_id, $lunch_meal_counter);
-        }
-        else {
-          drupal_set_message("Lunch for children under 3 is free.");
-        }
-      }
-      if ($dinner_meal_counter > 0) {
-        if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 9) {
-          $dinner_id = 10;
-          add_product_to_cart($dinner_id, $dinner_meal_counter);
-        }
-        else if($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'] > 3) {
-          $dinner_id = 21;
-          add_product_to_cart($dinner_id, $dinner_meal_counter);
-        }
-        else {
-          drupal_set_message("Lunch for children under 3 is free.");
-        }
-      }
-    }
+   }
     else {
       //it's a full time registration
       $product_id = get_full_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value']);
@@ -118,15 +62,38 @@ function reg_checkout_entity_insert($entity) {
   }
 }
 function day_use_fee_to_cart($age, $no_meal_counter){
-  if($age > 3) {
-    $no_meal_id = 22;
+  if($age < 2 ) {
+  }
+  else if($age > 2 && $age <= 9 ) {
+    $no_meal_id = 27;
+    add_product_to_cart($no_meal_id, $no_meal_counter);
+  }
+  else if($age > 9 && $age <= 15 ) {
+    $no_meal_id = 28;
     add_product_to_cart($no_meal_id, $no_meal_counter);
   }
   else {
-    $no_meal_id = 23;
+    $no_meal_id = 29;
     add_product_to_cart($no_meal_id, $no_meal_counter);
   }
 }
+function meals_day_use_fee_to_cart($age, $no_meal_counter){
+  if($age < 2 ) {
+  }
+  else if($age > 2 && $age <= 9 ) {
+    $no_meal_id = 24;
+    add_product_to_cart($no_meal_id, $no_meal_counter);
+  }
+  else if($age > 9 && $age <= 15 ) {
+    $no_meal_id = 25;
+    add_product_to_cart($no_meal_id, $no_meal_counter);
+  }
+  else {
+    $no_meal_id = 26;
+    add_product_to_cart($no_meal_id, $no_meal_counter);
+  }
+}
+
 function add_product_to_cart($product_id, $quantity) {
   global $user;
   //load up the product id
@@ -137,21 +104,21 @@ function add_product_to_cart($product_id, $quantity) {
   commerce_cart_product_add($user->uid, $line_item);
 }
 function get_full_time_product_id($age) {
-  if ($age <= 3) {
+  if ($age <= 2) {
     $product_id = 6;
   }
-  if ($age <= 6 && $age > 3) {
+  if ($age <= 5 && $age > 2) {
     $product_id = 5;
   }
   if ($age <= 9 && $age > 6) {
     $product_id = 4;
   }
-  if ($age <= 12 && $age > 9) {
+  if ($age <= 15 && $age > 9) {
     $product_id = 3;
   }
-  if ($age <= 15 && $age > 12) {
-    $product_id = 2;
-  }
+//  if ($age <= 15 && $age > 12) {
+//    $product_id = 2;
+//  }
   if ($age > 15) {
     $product_id = 1;
   }
@@ -159,22 +126,22 @@ function get_full_time_product_id($age) {
 }
 
 function get_part_time_product_id($age, $day_count) {
-  if ($age <= 3 && $day_count == 1) {
+  if ($age <= 9 && $age > 2 && $day_count == 1) {
     $product_id = 11;
   }
-  if ($age <= 9 && $age > 3 && $day_count == 1) {
+  if ($age <= 15 && $age > 9 && $day_count == 1) {
     $product_id = 12;
   }
-  if ($age > 9 && $day_count == 1) {
+  if ($age > 15 && $day_count == 1) {
     $product_id = 13;
   }
-  if ($age <= 3 && $day_count == 2) {
+  if ($age <= 9 && $age > 2 && $day_count == 2) {
     $product_id = 14;
   }
-  if ($age <= 9 && $age > 3 && $day_count == 2) {
+  if ($age <= 15 && $age > 9 && $day_count == 2) {
     $product_id = 15;
   }
-  if ($age > 9 && $day_count == 2) {
+  if ($age > 15 && $day_count == 2) {
     $product_id = 16;
   }
 
