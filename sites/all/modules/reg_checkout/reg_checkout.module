@@ -15,10 +15,10 @@ function reg_checkout_entity_insert($entity) {
 
       foreach ($entity->field_which_days[LANGUAGE_NONE] as $key => $value) {
         //see if they have the night checked
-        //dpm($value);
         $value = strtolower($value['value']);
+        //print_r($value);
         //there is no monday night, so if the value is not monday, check if the night is checked and increment the counter
-        if ($value != 'monday'){
+        if ($value != 'monday' && $value != 'alldays'){
           $field_name = "field_$value"."_night";
           $meal_field_name = "field_$value"."_meals";
           if ($entity->{"$field_name"}[LANGUAGE_NONE]['0']['value'] != 1){
@@ -51,12 +51,18 @@ function reg_checkout_entity_insert($entity) {
         $product_id = get_part_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 2);
         add_product_to_cart($product_id, 1);
       }
-   }
+      if ($value == 'alldays') {
+        // they want to come for all the days, but are staying off site
+        $product_id = get_full_time_os_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value']);
+        add_product_to_cart($product_id, 1);
+      }
+    }
     else {
       //it's a full time registration
       $product_id = get_full_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value']);
       add_product_to_cart($product_id, 1);
     }
+    //die();
     drupal_set_message("Registration for <b>".$entity->field_first_name[LANGUAGE_NONE]['0']['value']."</b> has been successfully submitted.");
     drupal_set_message("Fill out the form again, to register another person, or head to the <a href='/cart'>cart</a> to get payment instructions.<br>You will not be considered as registered and your room will not be assigned until payment is received.");
   }
@@ -125,6 +131,23 @@ function get_full_time_product_id($age) {
   return $product_id;
 }
 
+function get_full_time_os_product_id($age) {
+  if ($age <= 2) {
+    $product_id = 6;
+  }
+  if ($age <= 9 && $age > 2) {
+    $product_id = 30;
+  }
+ if ($age <= 15 && $age > 9) {
+    $product_id = 31;
+  }
+ if ($age > 15) {
+    $product_id = 32;
+  }
+  return $product_id;
+}
+
+
 function get_part_time_product_id($age, $day_count) {
   if ($age <= 9 && $age > 2 && $day_count == 1) {
     $product_id = 11;
@@ -152,6 +175,11 @@ function get_part_time_product_id($age, $day_count) {
 
 function reg_checkout_form_validate(&$form, &$form_state){
   //dsm($form);
+  // check for people trying to buy all the days and individual days
+  if(in_array('AllDays', $form['field_which_days'][LANGUAGE_NONE]['#value']) && count($form['field_which_days'][LANGUAGE_NONE]['#value']) > 1) {
+    form_set_error('form', "If you're coming for all the days, you cannot select individual days.");
+  }
+
   //foreach days checked, see if they're coming that night
   foreach($form['field_which_days'][LANGUAGE_NONE]['#value'] as $value){
     //check if monday is selected and if they don't have a breakfast choice
@@ -159,7 +187,7 @@ function reg_checkout_form_validate(&$form, &$form_state){
       form_set_error('form', "You need to tell us if you need $value breakfast");
     }
     //if it's not monday, check and see if they told us if they're coming for that night
-    if ($value != 'Monday') {
+    if ($value != 'Monday' && $value != 'AllDays') {
       $field_name = "field_".strtolower($value)."_night";
       //if they didn't tell us, throw an error
       if( $form[$field_name]['und']['#value'] === NULL && $value != 'Monday' ) {
