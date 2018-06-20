@@ -68,7 +68,7 @@ function reg_checkout_entity_insert($entity) {
   }
 }
 function day_use_fee_to_cart($age, $no_meal_counter){
-  if($age < 2 ) {
+  if($age <= 2 ) {
   }
   else if($age > 2 && $age <= 9 ) {
     $no_meal_id = 27;
