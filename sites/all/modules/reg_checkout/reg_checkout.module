@@ -19,41 +19,25 @@ function reg_checkout_entity_insert($entity) {
         //print_r($value);
         //there is no monday night, so if the value is not monday, check if the night is checked and increment the counter
         if ($value != 'monday' && $value != 'alldays'){
-          $field_name = "field_$value"."_night";
-          $meal_field_name = "field_$value"."_meals";
-          if ($entity->{"$field_name"}[LANGUAGE_NONE]['0']['value'] != 1){
-            $night_counter++;
-          }
-          else {
-            //they're not coming for the night, so add the day use fee
-            foreach ($entity->{"$meal_field_name"}[LANGUAGE_NONE] as $key => $value) {
-              //see if they have any meals checked
-              switch ($value['value']) {
-                case 'Meals':
-                  $meal_counter++;
-                  meals_day_use_fee_to_cart($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
-                  break;
-                case 'No Meals':
-                  day_use_fee_to_cart($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
-                  break;
-              }
-            }
-          }
+          $night_counter++;
         }
       }
       if ($night_counter == 1){
         //add one night product to cart
         $product_id = get_part_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 1);
+        //dpm($product_id);
         add_product_to_cart($product_id, 1);
       }
       else if ($night_counter == 2) {
         //add two night product to cart
         $product_id = get_part_time_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value'], 2);
+        //dpm($product_id);
         add_product_to_cart($product_id, 1);
       }
       if ($value == 'alldays') {
         // they want to come for all the days, but are staying off site
         $product_id = get_full_time_os_product_id($entity->field_age_at_ldr[LANGUAGE_NONE]['0']['value']);
+        //dpm($product_id);
         add_product_to_cart($product_id, 1);
       }
     }
@@ -135,8 +119,11 @@ function get_full_time_os_product_id($age) {
   if ($age <= 2) {
     $product_id = 6;
   }
-  if ($age <= 9 && $age > 2) {
+  if ($age <= 5 && $age > 2) {
     $product_id = 30;
+  }
+  if ($age <= 9 && $age > 5) {
+    $product_id = 35;
   }
  if ($age <= 15 && $age > 9) {
     $product_id = 31;
@@ -149,17 +136,20 @@ function get_full_time_os_product_id($age) {
 
 
 function get_part_time_product_id($age, $day_count) {
-  if ($age <= 9 && $age > 2 && $day_count == 1) {
-    $product_id = 11;
+  if ($age <= 5 && $age > 2 && $day_count == 1) {
+    $product_id = 25;
   }
   if ($age <= 15 && $age > 9 && $day_count == 1) {
-    $product_id = 12;
+    $product_id = 25;
   }
   if ($age > 15 && $day_count == 1) {
-    $product_id = 13;
+    $product_id = 26;
   }
-  if ($age <= 9 && $age > 2 && $day_count == 2) {
+  if ($age <= 5 && $age > 2 && $day_count == 2) {
     $product_id = 14;
+  }
+  if ($age <= 9 && $age > 5 && $day_count == 2) {
+    $product_id = 33;
   }
   if ($age <= 15 && $age > 9 && $day_count == 2) {
     $product_id = 15;
@@ -169,7 +159,6 @@ function get_part_time_product_id($age, $day_count) {
   }
 
   return $product_id;
-
 }
 
 
@@ -182,10 +171,7 @@ function reg_checkout_form_validate(&$form, &$form_state){
 
   //foreach days checked, see if they're coming that night
   foreach($form['field_which_days'][LANGUAGE_NONE]['#value'] as $value){
-    //check if monday is selected and if they don't have a breakfast choice
-    if ($value == 'Monday' && $form['field_monday_breakfast']['und']['#value'] === NULL ) {
-      form_set_error('form', "You need to tell us if you need $value breakfast");
-    }
+    $day_count++;
     //if it's not monday, check and see if they told us if they're coming for that night
     if ($value != 'Monday' && $value != 'AllDays') {
       $field_name = "field_".strtolower($value)."_night";
@@ -193,14 +179,10 @@ function reg_checkout_form_validate(&$form, &$form_state){
       if( $form[$field_name]['und']['#value'] === NULL && $value != 'Monday' ) {
         form_set_error('form', "You need to tell us if you're coming for $value night.");
       }
-      //if they told us that they're coming for the day only, make sure they picked some meal
-      if( $form[$field_name]['und']['#value'] == 1) {
-        $meal_field_name = "field_".strtolower($value)."_meals";
-        if( empty($form[$meal_field_name]['und']['#value'])) {
-          form_set_error('form', "You need to tell us which meals you plan on purchasing for $value");
-        }
-      }
     }
+  }
+  if ($day_count == 3){
+    form_set_error('form', "If you're coming for all the days, you cannot select individual days.");
   }
 }
 function reg_checkout_form_alter(&$form, &$form_state, $form_id){
