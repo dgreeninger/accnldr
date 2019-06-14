@@ -186,9 +186,6 @@ function reg_checkout_form_validate(&$form, &$form_state){
   if ($night_count == 1) {
     form_set_error('form', "There is no option to come for one night, please select two nights, or just plan on coming for the day. If you have any questions, please contact the registrar.");
   }
-  if ($day_count == 3){
-    form_set_error('form', "If you're coming for all the days, you cannot select individual days.");
-  }
 }
 function reg_checkout_form_alter(&$form, &$form_state, $form_id){
 
