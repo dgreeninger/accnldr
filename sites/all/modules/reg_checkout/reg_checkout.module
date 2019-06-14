@@ -178,8 +178,13 @@ function reg_checkout_form_validate(&$form, &$form_state){
       //if they didn't tell us, throw an error
       if( $form[$field_name]['und']['#value'] === NULL && $value != 'Monday' ) {
         form_set_error('form', "You need to tell us if you're coming for $value night.");
+      } else {
+        $night_count++;
       }
     }
+  }
+  if ($night_count == 1) {
+    form_set_error('form', "There is no option to come for one night, please select two nights, or just plan on coming for the day. If you have any questions, please contact the registrar.");
   }
   if ($day_count == 3){
     form_set_error('form', "If you're coming for all the days, you cannot select individual days.");
