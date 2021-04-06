@@ -178,7 +178,10 @@ function reg_checkout_form_validate(&$form, &$form_state){
       //if they didn't tell us, throw an error
       if( $form[$field_name]['und']['#value'] === NULL && $value != 'Monday' ) {
         form_set_error('form', "You need to tell us if you're coming for $value night.");
-      } else {
+      } else if( $form[$field_name]['und']['#value'] == 1 ) {
+      // if they're not coming for the night, that's ok
+      }
+      else {
         $night_count++;
       }
     }
