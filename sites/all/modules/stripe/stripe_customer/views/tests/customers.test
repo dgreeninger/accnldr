@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * @file
+ * Commerce customer profile tests.
+ */
+
+/**
+ * Functional tests for the commerce customer UI module.
+ */
+class StripeCustomerCreateTest extends DrupalWebTestCase {
+  /**
+   * Implementation of getInfo().
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Stripe Customer creation',
+      'description' => 'Test creating and updating Stripe customers.',
+      'group' => 'Stripe',
+    );
+  }
+
+  /**
+   * Implementation of setUp().
+   */
+  function setUp() {
+    $modules = parent::setUpHelper('all');
+    parent::setUp($modules);
+    $this->customer = new \Stripe\CustomerTest();
+  }
+
+  /**
+   * Access to the customer's default source (last4: 4242)
+   */
+  public function testStripeCustomerCreate() {
+    // Create a dummy customer on Stripe.
+    $source = $this->customer->testCustomerAddSource();
+    $saved = $this->customer->testSave();
+    $default_source = \Stripe\SourceTest::retrieve($this->customer->default_source);
+    $this->assertTrue($default_source->last4 == '4242', t('Created a test source card in Stripe.'));
+  }
+}
