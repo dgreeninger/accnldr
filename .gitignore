@@ -6,3 +6,5 @@ recordings/*
 sites/*/files
 sites/*/private
 phpMyAdmin/*
+error_log
+.ftpquota
