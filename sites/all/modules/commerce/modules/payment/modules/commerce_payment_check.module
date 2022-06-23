@@ -14,7 +14,7 @@ function commerce_payment_check_commerce_payment_method_info() {
   $payment_methods = array();
 
   $payment_methods['commerce_payment_check'] = array(
-    'title' => t('Mail a check'),
+    'title' => t('Write a check to "Apostolic Christian Church" for the Subtotal amount and select Continue for the mailing address.'),
     'description' => t('You can use a check to pay.'),
     'active' => TRUE,
   );
@@ -29,8 +29,7 @@ function commerce_payment_check_submit_form($payment_method, $pane_values, $chec
 
   // Default to a known test credit card number. For valid numbers of other card
   // types see: http://www.rimmkaufman.com/blog/credit-card-test-numbers/09112007/
-  
-  drupal_set_message(t('You can mail a check to Stephanie Jakob to save the credit card processing fees.'));
+  drupal_set_message(t('You can mail a check to save the credit card processing fees. Select paypal, to pay online via credit card with a 3.5% fee..'));
   return $form['mode_type'];
 
 }
@@ -39,6 +38,10 @@ function commerce_payment_check_submit_form($payment_method, $pane_values, $chec
  * Payment method callback: submit form validation.
  */
 function commerce_payment_check_submit_form_validate($payment_method, $pane_form, $pane_values, $order, $form_parents = array()) {
+  //echo '<pre>' . print_r(get_defined_vars(), true) . '</pre>'; die;
+  //echo '<pre>' . print_r(get_defined_functions()). '</pre>'; die;
+  commerce_discount_commerce_cart_order_empty($order);
+
   return TRUE;
 }
 
