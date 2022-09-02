@@ -6,8 +6,8 @@ version = 7.x-1.x
 dependencies[] = filebrowser
 dependencies[] = awssdk2
 
-; Information added by Drupal.org packaging script on 2018-05-24
-version = "7.x-3.5"
+; Information added by Drupal.org packaging script on 2022-02-03
+version = "7.x-3.4+1-dev"
 core = "7.x"
 project = "filebrowser"
-datestamp = "1527162487"
+datestamp = "1643883127"

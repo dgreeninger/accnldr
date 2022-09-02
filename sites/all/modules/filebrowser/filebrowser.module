@@ -227,7 +227,7 @@ function filebrowser_form(&$node, &$form_state) {
   $form['folder_presentation']['visible_columns'] = array(
     '#type' => 'checkboxes',
     '#title' => t("Visible columns"),
-    '#default_value' => _filebrowser_properties_to_checkboxes($node->folder_presentation->visible_columns),
+    '#default_value' => isset($node->folder_presentation->visible_columns) ? _filebrowser_properties_to_checkboxes($node->folder_presentation->visible_columns) : array(),
     '#options' => _filebrowser_options($columns)
   );
 

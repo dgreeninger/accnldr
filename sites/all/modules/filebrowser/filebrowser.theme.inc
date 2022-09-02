@@ -250,26 +250,30 @@ function theme_dir_listing_list_view($node) {
       $columns = _filebrowser_externals('metadata_info');
 
       if (isset($columns[$table_sort['sql']]) && isset($columns[$table_sort['sql']]['sortable']) && $columns[$table_sort['sql']]['sortable']) {
++       $sorter = null;
         switch ($columns[$table_sort['sql']]['type']) {
           case 'integer' :
-            $code = '$a=isset($a["' . $field . '"])?$a["' . $field . '"]:0;';
-            $code .= '$b=isset($b["' . $field . '"])?$b["' . $field . '"]:0;';
-            $code .= 'return $a-$b;';
+            $sorter = function ($a, $b) use ($field) {
+	      $a = isset($a->$field) ? $a->$field : 0;
+	      $b = isset($b->$field) ? $b->$field : 0;
+	      return $a-$b;
+	    }; 
             break;
 
-          case 'string' :
-            $code = '$a=isset($a["' . $field . '"])?$a["' . $field . '"]:"";';
-            $code .= '$b=isset($b["' . $field . '"])?$b["' . $field . '"]:"";';
-            $code .= 'return -strcmp(strtolower($a),strtolower($b));';
+	  case 'string' :
+	    $sorter = function ($a, $b) use ($field) {
+	      $a = isset($a->$field) ? $a->$field : '';
+	      $b = isset($b->$field) ? $b->$field : '';
+	      return -strcmp(drupal_strtolower($a), drupal_strtolower($b));
+	    };
             break;
 
         }
-        $sorter = create_function('$a,$b', $code);
         usort($just_folders, $sorter);
         if ($table_sort['sort'] == 'asc') {
           $just_folders = array_reverse($just_folders, TRUE);
-        }
-        usort($just_files, create_function('$a,$b', $code));
+	}
+	usort($just_files, $sorter);
         if ($table_sort['sort'] == 'asc') {
           $just_files = array_reverse($just_files, TRUE);
         }
