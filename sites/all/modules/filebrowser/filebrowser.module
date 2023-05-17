@@ -23,7 +23,6 @@
 
 require_once "filebrowser.common.inc";
 require_once "filebrowser.helpers.inc";
-
 /**
  * Implements hook_node_info().
  */
