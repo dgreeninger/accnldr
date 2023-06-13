@@ -52,10 +52,10 @@ function commerce_payment_check_submit_form_submit($payment_method, $pane_form, 
   // Just as an check, we might store information in the order object from the
   // payment parameters, though we would never save a full credit card number,
   // even in checks!
-  $number = $pane_values['credit_card']['number'];
-  $pane_values['credit_card']['number'] = substr($number, 0, 4) . str_repeat('-', strlen($number) - 8) . substr($number, -4);
+  # $number = $pane_values['credit_card']['number'];
+  # $pane_values['credit_card']['number'] = substr($number, 0, 4) . str_repeat('-', strlen($number) - 8) . substr($number, -4);
 
-  $order->data['commerce_payment_check'] = $pane_values;
+  # $order->data['commerce_payment_check'] = $pane_values;
 
   // Every attempted transaction should result in a new transaction entity being
   // created for the order to log either the success or the failure.
