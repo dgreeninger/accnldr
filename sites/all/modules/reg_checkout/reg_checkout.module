@@ -180,48 +180,48 @@ function get_tier_product_id($age, $tier) {
     $product_id = 6;
   }
   if ($age > 2 && $age <= 5 && $tier == 2) {
-    $product_id = 14;
+    $product_id = 24;
   }
   if ($age > 5 && $age <= 9 && $tier == 2) {
-    $product_id = 33;
+    $product_id = 25;
   }
   if ($age > 9 && $age <= 15 && $tier == 2) {
-    $product_id = 15;
+    $product_id = 26;
   }
   if ($age > 15 && $tier == 2) {
-    $product_id = 16;
+    $product_id = 36;
   }
   //tier 3
   if ($age <= 2 && $tier == 3) {
     $product_id = 6;
   }
   if ($age > 2 && $age <= 5 && $tier == 3) {
-    $product_id = 24;
+    $product_id = 14;
   }
   if ($age > 5 && $age <= 9 && $tier == 3) {
-    $product_id = 25;
+    $product_id = 33;
   }
   if ($age > 9 && $age <= 15 && $tier == 3) {
-    $product_id = 26;
+    $product_id = 15;
   }
   if ($age > 15 && $tier == 3) {
-    $product_id = 36;
+    $product_id = 16;
   }
   //tier 4
   if ($age <= 2 && $tier == 4) {
     $product_id = 6;
   }
   if ($age > 2 && $age <= 5 && $tier == 4) {
-    $product_id = 38;
+    $product_id = 27;
   }
   if ($age > 5 && $age <= 9 && $tier == 4) {
-    $product_id = 39;
+    $product_id = 27;
   }
   if ($age > 9 && $age <= 15 && $tier == 4) {
-    $product_id = 40;
+    $product_id = 29;
   }
   if ($age > 15 && $tier == 4) {
-    $product_id = 41;
+    $product_id = 29;
   }
   return $product_id;
 }
@@ -229,10 +229,6 @@ function get_tier_product_id($age, $tier) {
 
 function reg_checkout_form_validate(&$form, &$form_state){
   //dsm($form);
-  // check for people trying to buy all the days and individual days
-  if(in_array('AllDays', $form['field_which_days'][LANGUAGE_NONE]['#value']) && count($form['field_which_days'][LANGUAGE_NONE]['#value']) > 1) {
-    form_set_error('form', "If you're coming for all the days, you cannot select individual days.");
-  }
 
   //foreach days checked, see if they're coming that night
   foreach($form['field_which_days'][LANGUAGE_NONE]['#value'] as $value){
