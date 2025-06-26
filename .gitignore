@@ -10,3 +10,4 @@ phpmyadmin/*
 error_log
 .ftpquota
 files/
+s3-recordings/

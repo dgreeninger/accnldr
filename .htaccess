@@ -154,3 +154,27 @@ DirectoryIndex index.php index.html index.htm
   # Disable Proxy header, since it's an attack vector.
   RequestHeader unset Proxy
 </IfModule>
+
+
+BrowserMatchNoCase "libwww-perl" bad_bot
+BrowserMatchNoCase "wget" bad_bot
+BrowserMatchNoCase "LieBaoFast" bad_bot
+BrowserMatchNoCase "Mb2345Browser" bad_bot
+BrowserMatchNoCase "zh-CN" bad_bot
+BrowserMatchNoCase "MicroMessenger" bad_bot
+BrowserMatchNoCase "zh_CN" bad_bot
+BrowserMatchNoCase "Kinza" bad_bot
+BrowserMatchNoCase "Bytespider" bad_bot
+BrowserMatchNoCase "Baiduspider" bad_bot
+BrowserMatchNoCase "Sogou" bad_bot
+BrowserMatchNoCase "Datanyze" bad_bot
+BrowserMatchNoCase "AspiegelBot" bad_bot
+BrowserMatchNoCase "adscanner" bad_bot
+BrowserMatchNoCase "serpstatbot" bad_bot
+BrowserMatchNoCase "spaziodat" bad_bot
+BrowserMatchNoCase "undefined" bad_bot
+Order Deny,Allow
+Deny from env=bad_bot
+
+php_value upload_max_filesize 40M
+php_value post_max_size 42M
