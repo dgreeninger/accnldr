@@ -525,7 +525,7 @@ function registration_user_delete($account) {
  *   Renderable elements.
  */
 function registration_view(Registration $registration, $view_mode = 'full') {
-  return $registration->view($view_mode);
+    return $registration->view($view_mode);
 }
 
 /**
